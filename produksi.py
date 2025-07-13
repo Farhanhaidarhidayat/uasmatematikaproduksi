@@ -66,6 +66,26 @@ if res.success:
     </table>
     """, unsafe_allow_html=True)
 
+    # ========================
+    # Grafik Awal: Area Feasible
+    st.subheader("📉 Grafik Area Feasible Produksi")
+
+    x_vals = np.linspace(0, total_bahan, 300)
+    y1 = (total_bahan - bahan_spion * x_vals) / bahan_dashboard
+    y2 = (total_waktu - waktu_spion * x_vals) / waktu_dashboard
+    y_vals = np.minimum(y1, y2)
+
+    fig0, ax0 = plt.subplots()
+    ax0.plot(x_vals, y1, label="Batas Bahan", linestyle='--')
+    ax0.plot(x_vals, y2, label="Batas Waktu", linestyle='--')
+    ax0.fill_between(x_vals, 0, y_vals, color="lightblue", alpha=0.4, label="Area Feasible")
+    ax0.scatter(x_opt, y_opt, color='red', label='Solusi Optimal')
+    ax0.set_xlabel("Jumlah Spion")
+    ax0.set_ylabel("Jumlah Dashboard")
+    ax0.set_title("Area Feasible Produksi")
+    ax0.legend()
+    st.pyplot(fig0)
+
     # ==========================
     # Grafik Garis 1: Produksi Spion
     st.subheader("📈 Grafik Garis: Produksi Spion")
@@ -78,7 +98,7 @@ if res.success:
     # Grafik Garis 2: Produksi Dashboard
     st.subheader("📈 Grafik Garis: Produksi Dashboard")
     fig2, ax2 = plt.subplots()
-    ax2.plot(['Hanya Dashboard', 'Campuran'], [dashboard_only, y_opt], marker='o', color='orange', linestyle='-')
+    ax2.plot(['Hanya Dashboard', 'Campuran'], [dashboard_only, y_opt], marker='o', linestyle='-', color='orange')
     ax2.set_ylabel("Jumlah Unit Dashboard")
     ax2.set_ylim(bottom=0)
     st.pyplot(fig2)
