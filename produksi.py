@@ -7,7 +7,7 @@ st.set_page_config(page_title="Optimasi Produksi Injection", layout="wide")
 
 st.title("🛠️ Aplikasi Optimasi Produksi Injection (Linear Programming)")
 
-st.sidebar.header("Input Data Produksi")
+st.sidebar.header("📥 Input Data Produksi")
 
 # Input data untuk produk
 profit_spion = st.sidebar.number_input("Keuntungan per unit Spion (Rp)", value=15000)
@@ -56,12 +56,53 @@ if res.success:
     plt.fill_between(x, np.minimum(y1, y2), color="lightblue", alpha=0.3)
 
     plt.scatter(x_opt, y_opt, color="red", label="Solusi Optimal")
-    plt.xlabel("Spion")
-    plt.ylabel("Dashboard")
+    plt.xlabel("Jumlah Spion")
+    plt.ylabel("Jumlah Dashboard")
     plt.legend()
     plt.xlim(left=0)
     plt.ylim(bottom=0)
 
     st.pyplot(plt)
+
+    # Perbandingan dengan hanya satu jenis produksi
+    st.subheader("📈 Perbandingan Produksi dan Keuntungan")
+
+    # Hanya Spion
+    max_spion_by_bahan = total_bahan / bahan_spion
+    max_spion_by_waktu = total_waktu / waktu_spion
+    max_spion_unit = int(min(max_spion_by_bahan, max_spion_by_waktu))
+    profit_only_spion = max_spion_unit * profit_spion
+
+    # Hanya Dashboard
+    max_dash_by_bahan = total_bahan / bahan_dashboard
+    max_dash_by_waktu = total_waktu / waktu_dashboard
+    max_dash_unit = int(min(max_dash_by_bahan, max_dash_by_waktu))
+    profit_only_dash = max_dash_unit * profit_dashboard
+
+    st.markdown(f"""
+    <table style="width:100%; border-collapse: collapse;" border="1">
+        <tr style="background-color:#f0f0f0;">
+            <th>Jenis Produksi</th>
+            <th>Jumlah Unit</th>
+            <th>Keuntungan Total</th>
+        </tr>
+        <tr>
+            <td>Hanya Spion</td>
+            <td>{max_spion_unit} unit</td>
+            <td>Rp {profit_only_spion:,.0f}</td>
+        </tr>
+        <tr>
+            <td>Hanya Dashboard</td>
+            <td>{max_dash_unit} unit</td>
+            <td>Rp {profit_only_dash:,.0f}</td>
+        </tr>
+        <tr style="font-weight:bold; background-color:#e0ffe0;">
+            <td>Hasil Optimasi (Campuran)</td>
+            <td>{x_opt:.0f} Spion, {y_opt:.0f} Dashboard</td>
+            <td>Rp {total_profit:,.0f}</td>
+        </tr>
+    </table>
+    """, unsafe_allow_html=True)
+
 else:
     st.error("❌ Optimasi gagal. Periksa kembali input datanya.")
